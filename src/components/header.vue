@@ -1,56 +1,184 @@
 <template>
-  <header>
-    <div class="logo">
+    <header>
+        <div class="logo">
         <img src="@/assets/logo.svg" alt="Logo" />
-    </div>
-    <nav class="nav-links">
-        <a href="#">Collections</a>
-        <a href="#">Men</a>
-        <a href="#">Women</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-    </nav>
-    <div class="icons">
-       <img src="@/assets/icon-cart.svg" alt="Cart" id="cart-icon" />
-       <img src="@/assets/image-avatar.png" alt="Profile" class="profile-img" />
-    </div>
-</header>
-<main class="main">
-    <div class="product-images">
-        <img src="@/assets/image-product-1.jpg" alt="Product Image" />
-        <div class="thumbnail-container">
-            <img src="@/assets/image-product-1-thumbnail.jpg" alt="Thumbnail 1" />
-            <img src="@/assets/image-product-2-thumbnail.jpg" alt="Thumbnail 2" />
-            <img src="@/assets/image-product-3-thumbnail.jpg" alt="Thumbnail 3" />
-            <img src="@/assets/image-product-4-thumbnail.jpg" alt="Thumbnail 4" />
         </div>
-    </div>
-
-    <div class="product-details">
-        <h1>Fall Limited Edition Sneakers</h1>
-        <p>These low-profile sneakers are your perfect casual wear companion. Featuring a durable rubber outer sole, they’ll withstand everything the weather can offer.</p>
-        <div class="price-section">
-            <span class="price">$125.00</span>
-            <span class="discount">50%</span>
-            <span class="original-price">$250.00</span>
+        <nav class="nav-links">
+            <a href="#collections">Collections</a>
+            <a href="#men">Men</a>
+            <a href="#women">Women</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        
+        <div class="icons">
+            <img src="@/assets/icon-cart.svg" alt="Cart" id="cart-icon" @click='opencart'/>
+            <img src="@/assets/image-avatar.png" alt="Profile" class="profile-img" />
         </div>
-        <div class="cart-actions">
-            <div class="quantity">
-                <button>-</button>
-                <span>1</span>
-                <button>+</button>
+    </header>
+    <main class="main">
+        <div class="product-images">
+             <img src="@/assets/image-product-1.jpg" alt="Product Image" />
+            <div class="thumbnail-container">
+            <img
+                v-for="(image, index) in images"
+                :key="index"
+                :src="image.thumbnail"
+                :alt="'Thumbnail ' + (index + 1)"
+                @click="openPopup(image.full)"
+                />
             </div>
-            <button class="add-to-cart">Add to cart</button>
         </div>
-    </div>
-</main>
+
+            <div class="product-details">
+                <h1>Fall Limited Edition</h1>
+                <h1>Sneakers</h1>
+                <p>These low-profile sneakers are your perfect casual wear companion. Featuring a durable rubber outer sole, they’ll withstand everything the weather can offer.</p>
+                <div class="price-section">
+                    <span class="price">$125.00</span>
+                    <span class="discount">50%</span>
+                </div>
+                <span class="original-price">$250.00</span>
+                <div class="cart-actions">
+                    <div class="quantity">
+                        <button @click='minus1'>-</button>
+                        <span>{{quantity}}</span>
+                        <button @click='add1'>+</button>
+                    </div>
+                    <button class="add-to-cart" @click='addtocart'>Add to cart</button>
+                </div>
+                 <!-- Popup Modal -->
+                <div v-if="isPopupVisible" class="popup-overlay" @click="closePopup">
+                    <div class="popup-content" @click.stop>
+                        <img :src="currentImage" alt="Popup Image" />
+                        <button class="close-button" @click="closePopup">Close</button>
+                    </div>
+                </div>
+                    <div @click="closecart" class='cart-overlay'>
+                        <div v-if="popupcart" class="cart-popup">
+                        <div class="cart-header">
+                            <h4>Cart</h4>
+                        </div>
+                        <div v-if="!pressed" class="cart-body-not-pressed">
+                            <p>Your cart is empty.</p>
+                        </div>
+                        <div v-else class="cart-body">
+                            <div class="cart-item">
+                            <img src="@/assets/image-product-1-thumbnail.jpg" alt="Product Thumbnail" />
+                            <div class="cart-item-details">
+                                <p>Fall Limited Edition Sneakers</p>
+                                <p>
+                                $125.00 × {{ quantity }} <span class="cart-item-total">${{ finalprice }}</span>
+                                </p>
+                            </div>
+                            <img
+                                src="@/assets/icon-delete.svg"
+                                alt="Delete Icon"
+                                class="delete-icon"
+                                @click="clearCart"
+                            />
+                            </div>
+                            <div class="cart-footer">
+                            <button class="checkout-button">Checkout</button>
+                            </div>
+                        </div>
+                        </div>
+
+                    </div>
+                
+            </div>
+    </main>
 </template>
 
 <script>
-export default {
-  name: 'Header',
-  setup() {},
-};
+    import { ref } from 'vue';
+    export default {
+        name: "Header",
+        setup() {
+            const quantity=ref(1);
+            function add1()
+            {
+            quantity.value++;
+            }
+            function minus1(){
+                if(Number(quantity.value)>1)
+                quantity.value--;
+            }
+            const images = ref([
+            {
+                thumbnail: require('@/assets/image-product-1-thumbnail.jpg'),
+                full: require('@/assets/image-product-1.jpg'),
+            },
+            {
+                thumbnail: require('@/assets/image-product-2-thumbnail.jpg'),
+                full: require('@/assets/image-product-2.jpg'),
+            },
+            {
+                thumbnail: require('@/assets/image-product-3-thumbnail.jpg'),
+                full: require('@/assets/image-product-3.jpg'),
+            },
+            {
+                thumbnail: require('@/assets/image-product-4-thumbnail.jpg'),
+                full: require('@/assets/image-product-4.jpg'),
+            },
+            ]);
+
+            const isPopupVisible = ref(false);
+            const currentImage = ref('');
+     
+            const openPopup = (image) => {
+            currentImage.value = image;
+            isPopupVisible.value = true;
+            };
+
+            const closePopup = () => {
+            isPopupVisible.value = false;
+            currentImage.value = '';
+            };
+            const popupcart=ref(false);
+            function opencart(){
+               popupcart.value=true;
+            };
+            function closecart(){
+               popupcart.value=false;
+            };
+            
+            const price=ref(125);
+            const finalprice=ref(125*quantity.value);
+            const pressed=ref(false);
+            function addtocart(){
+                 price.value=price.value*quantity.value;
+                 pressed.value=true;
+
+                
+            }
+            const clearCart = () => {
+                quantity.value = 1;
+                finalprice.value = price.value;
+                pressed.value = false;
+            };
+            
+            return{
+                quantity,
+                images,
+                isPopupVisible,
+                currentImage,
+                openPopup,
+                closePopup,
+                add1,
+                minus1,
+                opencart,
+                popupcart,
+                closecart,
+                addtocart,
+                price,
+                pressed,
+                finalprice,
+                clearCart
+                
+            };
+        }
+    };
 </script>
 
 <style>
@@ -64,14 +192,159 @@ export default {
         body {
             font-family: Arial, sans-serif;
         }
-
-        header {
+         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 30px 90px;
             background-color: #fff;
             border-bottom: 1px solid #ddd;
+        }
+          .cart-popup {
+            position: absolute;
+            top: 70px; /* Adjust to align with the cart icon */
+            right: 20px; /* Adjust as needed */
+            width: 360px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease-in-out;
+            font-family: Arial, sans-serif;
+            }
+
+            .cart-popup::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 30px; /* Adjust for alignment */
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid white;
+            }
+
+            .cart-header {
+            padding: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            font-size: 1.2rem;
+            }
+
+            .cart-body-not-pressed {
+            padding: 20px;
+            text-align: center;
+            color: #717171;
+            }
+
+            .cart-body-not-pressed p {
+            margin: 0;
+            font-size: 1rem;
+            }
+
+            .cart-body {
+            padding: 15px;
+            }
+
+            .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            }
+
+            .cart-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            object-fit: cover;
+            }
+
+            .cart-item-details {
+            flex: 1;
+            }
+
+            .cart-item-details p {
+            margin: 0;
+            font-size: 14px;
+            color: #717171;
+            }
+
+            .cart-item-total {
+            font-weight: bold;
+            color: black;
+            }
+
+            .delete-icon {
+                cursor: pointer;
+                width: 20px !important;
+                height: 20px !important;
+            }
+
+            .cart-footer {
+            text-align: center;
+            }
+
+            .checkout-button {
+            background-color: #ff7d1a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            }
+
+            .checkout-button:hover {
+            background-color: #ff5500;
+            }
+
+    
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+       
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .popup-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+        }
+
+        .close-button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+          background-color: orange;
         }
 
         .logo {
@@ -91,13 +364,14 @@ export default {
 
         .nav-links a {
             text-decoration: none;
-            color: #000;
+            color: #696767;
             font-size: 1rem;
             transition: color 0.3s;
         }
 
         .nav-links a:hover {
             color: orange;
+            cursor:pointer;
         }
 
         .icons {
@@ -112,12 +386,14 @@ export default {
             cursor: pointer;
         }
 
+        
         .profile-img {
-            width: 40px;
-            height: 40px;
+            width: 40px !important; /* Force width */
+            height: 40px !important; /* Force height */
             border-radius: 50%;
             object-fit: cover;
             cursor: pointer;
+            margin-left:20px;
         }
         .main {
             display: flex;
@@ -172,7 +448,7 @@ export default {
 
         .product-details p {
             line-height: 1.5;
-            color: #666;
+            color: #717171;
         }
 
         .price-section {
@@ -188,7 +464,7 @@ export default {
         }
 
         .discount {
-            background-color: orange;
+            background-color: rgb(43, 43, 42);
             color: #fff;
             padding: 5px 10px;
             border-radius: 5px;
@@ -197,7 +473,7 @@ export default {
 
         .original-price {
             text-decoration: line-through;
-            color: #888;
+            color: #2d2c2c;
         }
 
         .cart-actions {
@@ -223,7 +499,7 @@ export default {
         }
 
         .add-to-cart {
-            background-color: orange;
+            background-color: rgb(30, 30, 29);
             color: #fff;
             border: none;
             padding: 10px 20px;
