@@ -18,7 +18,7 @@
     </header>
     <main class="main">
         <div class="product-images">
-             <img src="@/assets/image-product-1.jpg" alt="Product Image" />
+             <img src="@/assets/4.webp" alt="Product Image" />
             <div class="thumbnail-container">
             <img
                 v-for="(image, index) in images"
@@ -31,9 +31,15 @@
         </div>
 
             <div class="product-details">
-                <h1>Fall Limited Edition</h1>
+                <h1>AsicsGEL-NYC</h1>
                 <h1>Sneakers</h1>
-                <p>These low-profile sneakers are your perfect casual wear companion. Featuring a durable rubber outer sole, they’ll withstand everything the weather can offer.</p>
+                <p>Inspired by traditional and modern performance running styles, the GEL-NYC from asics features a midsole with a combination of lightweight foam and GEL technology inserts for optimal comfort.
+                   - Breathable mesh
+
+                    - Lace-up closure
+
+                    - GEL technology 
+                </p>
                 <div class="price-section">
                     <span class="price">$125.00</span>
                     <span class="discount">50%</span>
@@ -64,7 +70,7 @@
                         </div>
                         <div v-else class="cart-body">
                             <div class="cart-item">
-                            <img src="@/assets/image-product-1-thumbnail.jpg" alt="Product Thumbnail" />
+                            <img src="@/assets/1.webp" alt="Product Thumbnail" />
                             <div class="cart-item-details">
                                 <p>Fall Limited Edition Sneakers</p>
                                 <p>
@@ -106,20 +112,20 @@
             }
             const images = ref([
             {
-                thumbnail: require('@/assets/image-product-1-thumbnail.jpg'),
-                full: require('@/assets/image-product-1.jpg'),
+                thumbnail: require('@/assets/1.webp'),
+                full: require('@/assets/1.webp'),
             },
             {
-                thumbnail: require('@/assets/image-product-2-thumbnail.jpg'),
-                full: require('@/assets/image-product-2.jpg'),
+                thumbnail: require('@/assets/2.webp'),
+                full: require('@/assets/2.webp'),
             },
             {
-                thumbnail: require('@/assets/image-product-3-thumbnail.jpg'),
-                full: require('@/assets/image-product-3.jpg'),
+                thumbnail: require('@/assets/3.webp'),
+                full: require('@/assets/3.webp'),
             },
             {
-                thumbnail: require('@/assets/image-product-4-thumbnail.jpg'),
-                full: require('@/assets/image-product-4.jpg'),
+                thumbnail: require('@/assets/5.webp'),
+                full: require('@/assets/5.webp'),
             },
             ]);
 
@@ -147,7 +153,7 @@
             const finalprice=ref(125*quantity.value);
             const pressed=ref(false);
             function addtocart(){
-                 price.value=price.value*quantity.value;
+                 finalprice.value=price.value*quantity.value;
                  pressed.value=true;
 
                 
@@ -417,6 +423,7 @@
             flex-direction: row;
             margin-top:10px;
             gap: 30px;
+            
         }
 
         .thumbnail-container img {
