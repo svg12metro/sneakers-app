@@ -421,20 +421,22 @@
         .thumbnail-container {
             display: flex;
             flex-direction: row;
-            margin-top:10px;
-            gap: 30px;
-            
+            justify-content: center; /* Center the thumbnails */
+            margin-right:160px;
+            margin-top: 10px;
+            gap: 40px; /* Adjust gap between thumbnails */
+            height: auto; /* Remove fixed height */
         }
 
         .thumbnail-container img {
-            width: 90px;
-            height: auto;
+            width: 70px; /* Slightly smaller size for thumbnails */
+            height: 70px; /* Keep the height consistent with the width */
+            object-fit: cover; /* Ensure images maintain aspect ratio without distortion */
             border-radius: 10px;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: border 0.3s;
+            transition: border 0.3s, transform 0.2s;
         }
-
 
         .thumbnail-container img:hover {
             border: 2px solid orange;
